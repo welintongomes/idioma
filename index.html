@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo de Aprendizado de Inglês</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 English Learning Game</h1>
+            <p>Monte as frases na ordem correta!</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="game">Jogar</button>
+            <button class="tab" data-tab="manage">Gerenciar Frases</button>
+        </div>
+
+        <div class="content">
+            <!-- Game Tab -->
+            <div id="game" class="tab-content active">
+                <div class="controls">
+                    <div class="voice-control">
+                        <input type="checkbox" id="enableVoice" checked>
+                        <label for="enableVoice">🔊 Falar</label>
+                    </div>
+
+                    <!-- NOVOS FILTROS -->
+                    <div class="game-filters">
+                        <div class="filter-group">
+                            <label for="categorySelect">📂 Categoria:</label>
+                            <select id="categorySelect">
+                                <option value="all">Todas</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="difficultySelect">⭐ Dificuldade:</label>
+                            <select id="difficultySelect">
+                                <option value="all">Todas</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="btn" onclick="startGame()">Novo Jogo</button>
+                    <button class="btn btn-secondary" onclick="resetRound()" id="resetBtn" style="display: none;">🔄
+                        Resetar</button>
+                </div>
+
+                <div class="game-status">
+                    <div class="status-card">
+                        <h3>Pontuação</h3>
+                        <div class="status-value">
+                            <span id="currentScore">0</span> / <span id="totalQuestions">0</span>
+                        </div>
+                    </div>
+                    <div class="status-card">
+                        <h3>Pergunta</h3>
+                        <div class="status-value">
+                            <span id="currentQuestionNum">0</span> / <span id="totalPhrases">0</span>
+                        </div>
+                    </div>
+                    <div class="status-card">
+                        <h3>Restantes</h3>
+                        <div class="status-value" id="remainingQuestions">0</div>
+                    </div>
+                </div>
+
+                <div class="game-area">
+                    <div id="gameContent">
+                        <div style="text-align: center; padding: 40px;">
+                            <h2>🎮 Clique em "Novo Jogo" para começar!</h2>
+                            <p>Monte as palavras na ordem correta para formar a tradução em português.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="feedback" id="feedback"></div>
+            </div>
+
+            <!-- Manage Tab -->
+            <div id="manage" class="tab-content">
+                <div class="controls">
+                    <button class="btn" onclick="openAddModal()">➕ Adicionar Frase</button>
+                    <button class="btn btn-danger" onclick="clearAllPhrases()">🗑️ Limpar Tudo</button>
+                </div>
+
+                <div class="phrases-list" id="phrasesList">
+                    <!-- Phrases will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div id="phraseModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle">Adicionar Nova Frase</h2>
+            <form id="phraseForm">
+                <div class="form-group">
+                    <label for="englishPhrase">Frase em Inglês:</label>
+                    <input type="text" id="englishPhrase" required>
+                </div>
+                <div class="form-group">
+                    <label for="portugueseTranslation">Tradução em Português:</label>
+                    <input type="text" id="portugueseTranslation" required>
+                </div>
+                <!-- ADICIONAR ESTES NOVOS CAMPOS: -->
+                <div class="form-group">
+                    <label for="categorySelect2">📂 Categoria:</label>
+                    <select id="categorySelect2" required>
+                        <option value="">Selecione uma categoria</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="difficultySelect2">⭐ Dificuldade:</label>
+                    <select id="difficultySelect2" required>
+                        <option value="">Selecione a dificuldade</option>
+                    </select>
+                </div>
+
+                <div class="controls">
+                    <button type="submit" class="btn">Salvar</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                </div>
+            </form>
+            <div class="controls">
+                <button type="submit" class="btn">Salvar</button>
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+            </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
