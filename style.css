@@ -516,10 +516,21 @@ body {
     margin-left: 8px;
 }
 
-.difficulty-fácil { background-color: #4CAF50; }
-.difficulty-médio { background-color: #FF9800; }
-.difficulty-difícil { background-color: #f44336; }
-.difficulty-extremo { background-color: #9C27B0; }
+.difficulty-fácil {
+    background-color: #4CAF50;
+}
+
+.difficulty-médio {
+    background-color: #FF9800;
+}
+
+.difficulty-difícil {
+    background-color: #f44336;
+}
+
+.difficulty-extremo {
+    background-color: #9C27B0;
+}
 
 .category-badge {
     background-color: #2196F3;
@@ -529,6 +540,210 @@ body {
     font-size: 0.8rem;
     margin-left: 8px;
 }
+
+.controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.controls .btn {
+    white-space: nowrap;
+}
+
+#importFile {
+    display: none;
+}
+
+
+/* Estilos do Sistema de Níveis */
+.xp-bar {
+    width: 100%;
+    height: 8px;
+    background: #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 5px 0;
+}
+
+.xp-progress {
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50, #2196F3);
+    transition: width 0.5s ease;
+}
+
+.xp-text {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.player-title {
+    font-size: 0.8rem;
+    color: #FF9800;
+    font-weight: bold;
+}
+
+.level-up-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.3s ease;
+}
+
+.level-up-content {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    animation: levelUpBounce 0.6s ease;
+}
+
+.level-change {
+    font-size: 3rem;
+    font-weight: bold;
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.old-level {
+    color: #ffeb3b;
+}
+
+.new-level {
+    color: #4caf50;
+    animation: glow 1s ease-in-out infinite alternate;
+}
+
+.reward {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 15px;
+}
+
+.xp-bar-big {
+    width: 200px;
+    height: 12px;
+    background: #ddd;
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 10px auto;
+}
+
+.titles-list {
+    font-size: 0.8rem;
+    color: #FF9800;
+    margin-top: 5px;
+}
+
+.score-detail {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 5px;
+}
+
+.streak-bonus {
+    font-size: 0.8rem;
+    color: #FF9800;
+    margin-top: 3px;
+}
+
+.status-card.streak-card {
+    border-left: 4px solid #FF5722;
+    background: linear-gradient(135deg, rgba(255, 87, 34, 0.1), rgba(255, 152, 0, 0.1));
+}
+
+.status-card.level-card {
+    border-left: 4px solid #2196F3;
+    background: linear-gradient(135deg, rgba(33, 150, 243, 0.1), rgba(103, 58, 183, 0.1));
+}
+.multiple-choice-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.choice-btn {
+    background: white;
+    border: 2px solid #ddd;
+    padding: 15px 20px;
+    border-radius: 8px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 16px;
+}
+
+.choice-btn:hover:not(:disabled) {
+    border-color: #4CAF50;
+    background: #f8f9fa;
+}
+
+.choice-btn.correct {
+    background: #d4edda;
+    border-color: #28a745;
+    color: #155724;
+}
+
+.choice-btn.incorrect {
+    background: #f8d7da;
+    border-color: #dc3545;
+    color: #721c24;
+}
+
+.choice-btn:disabled {
+    cursor: not-allowed;
+}
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes levelUpBounce {
+    0% {
+        transform: scale(0.5) translateY(50px);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.1) translateY(-10px);
+    }
+
+    100% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 0 0 5px #4caf50;
+    }
+
+    to {
+        text-shadow: 0 0 20px #4caf50, 0 0 30px #4caf50;
+    }
+}
+
 
 @media (max-width: 768px) {
     .container {

@@ -304,7 +304,7 @@
         }
 
         .phrases-list {
-            max-height: 400px;
+            max-height: 441px;
             overflow-y: auto;
             background: #f8f9fa;
             border-radius: 15px;
@@ -351,7 +351,9 @@
         }
 
         .form-group {
+            display: flex;
             margin-bottom: 20px;
+            flex-direction: column;
         }
 
         .form-group label {
@@ -389,14 +391,21 @@
 
         .modal-content {
             background-color: white;
-            margin: 5% auto;
+            margin: auto;
             padding: 30px;
             border-radius: 20px;
             width: 90%;
             max-width: 500px;
+            max-height: 100vh;
+            /* altura máxima da tela */
+            overflow-y: auto;
+            /* scroll interno se necessário */
             position: relative;
             animation: modalSlideIn 0.3s ease;
+            box-sizing: border-box;
+            /* evita problemas de padding */
         }
+
 
         @keyframes modalSlideIn {
             from {
@@ -680,6 +689,67 @@
             background: linear-gradient(135deg, rgba(33, 150, 243, 0.1), rgba(103, 58, 183, 0.1));
         }
 
+        .multiple-choice-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .choice-btn {
+            padding: 15px 20px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: left;
+            transition: all 0.3s ease;
+        }
+
+        .choice-btn:hover {
+            background: #f0f8ff;
+            border-color: #4CAF50;
+            transform: translateY(-2px);
+        }
+
+        .choice-btn.correct {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .choice-btn.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .choice-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        select {
+            width: 100%;
+            /* ocupa toda a largura do container */
+            padding: 10px 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: white;
+            font-size: 16px;
+            appearance: none;
+            /* remove o estilo padrão do sistema */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="gray" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px;
+            cursor: pointer;
+        }
+
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -719,6 +789,7 @@
 
         @media (max-width: 768px) {
             .container {
+                min-height: 872px;
                 margin: -13px;
                 border-radius: 15px;
             }
@@ -733,11 +804,6 @@
 
             .content {
                 padding: 20px;
-            }
-
-            .controls {
-                flex-direction: column;
-                align-items: stretch;
             }
 
             .voice-control {
@@ -772,6 +838,13 @@
                 font-size: 0.9rem;
                 padding: 10px 15px;
             }
+
+            .controls {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-evenly;
+            }
+
         }
     </style>
 </head>
@@ -780,7 +853,7 @@
     <div class="container">
         <div class="header">
             <h1>🎓 English Learning Game</h1>
-            <p>Monte as frases na ordem correta!</p>
+            <!-- <p>Monte as frases na ordem correta!</p> -->
         </div>
 
         <div class="tabs">
@@ -852,13 +925,13 @@
             <!-- Manage Tab -->
             <div id="manage" class="tab-content">
                 <div class="controls">
-                    <button class="btn" onclick="openAddModal()">➕ Adicionar Frase</button>
+                    <button class="btn" onclick="openAddModal()">➕ Adicionar</button>
                     <button class="btn btn-secondary" onclick="exportPhrases()">📤 Exportar</button>
                     <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">📥
                         Importar</button>
                     <input type="file" id="importFile" accept=".json" style="display: none;"
                         onchange="importPhrases(event)">
-                    <button class="btn btn-danger" onclick="clearAllPhrases()">🗑️ Limpar Tudo</button>
+                    <button class="btn btn-danger" onclick="clearAllPhrases()">🗑️ Deletar</button>
                 </div>
 
                 <div class="phrases-list" id="phrasesList">
@@ -875,11 +948,11 @@
             <h2 id="modalTitle">Adicionar Nova Frase</h2>
             <form id="phraseForm">
                 <div class="form-group">
-                    <label for="englishPhrase">Frase em Inglês:</label>
+                    <label for="englishPhrase" id="labelEnglish">Frase em Inglês:</label>
                     <input type="text" id="englishPhrase" required>
                 </div>
                 <div class="form-group">
-                    <label for="portugueseTranslation">Tradução em Português:</label>
+                    <label for="portugueseTranslation" id="labelPortuguese">Tradução em Português:</label>
                     <input type="text" id="portugueseTranslation" required>
                 </div>
                 <!-- ADICIONAR ESTES NOVOS CAMPOS: -->
@@ -894,6 +967,23 @@
                     <select id="difficultySelect2" required>
                         <option value="">Selecione a dificuldade</option>
                     </select>
+                    <label for="gameTypeSelect">Tipo de Jogo:</label>
+                    <select id="gameTypeSelect" required>
+                        <option value="">Selecione o tipo</option>
+                    </select>
+                    <label for="questionDirection">Direção da Pergunta:</label>
+                    <select id="questionDirection" required>
+                        <option value="">Selecione a direção</option>
+                        <option value="en-pt">Inglês → Português</option>
+                        <option value="pt-en">Português → Inglês</option>
+                    </select>
+                    <div id="customOptionsContainer" style="display: none;">
+                        <label for="customOptions">Opções de Resposta (uma por linha):</label>
+                        <textarea id="customOptions"
+                            placeholder="Digite uma opção por linha...&#10;Exemplo:&#10;Bom dia!&#10;Boa tarde!&#10;Boa noite!&#10;Olá!"
+                            rows="4"></textarea>
+                        <small>Inclua a resposta correta entre as opções</small>
+                    </div>
                 </div>
 
                 <div class="controls">
@@ -903,69 +993,122 @@
             </form>
         </div>
     </div>
+    <template id="endGameTemplate">
+        <div class="game-complete">
+            <h2>🎮 Jogo Concluído!</h2>
+            <p class="end-message"></p>
+
+            <div class="score-summary">
+                <div class="score-item">
+                    <span class="score-label">Pontuação da Rodada:</span>
+                    <span class="score-value" id="roundScore"></span>
+                </div>
+                <div class="score-item">
+                    <span class="score-label">Acertos:</span>
+                    <span class="score-value" id="correctAnswers"></span>
+                </div>
+                <div class="score-item">
+                    <span class="score-label">Maior Sequência:</span>
+                    <span class="score-value" id="maxStreak"></span>
+                </div>
+                <div class="score-item">
+                    <span class="score-label">Pontuação Total:</span>
+                    <span class="score-value" id="totalScore"></span>
+                </div>
+                <div class="score-item bonus" id="perfectBonusContainer" style="display: none;">
+                    <span class="score-label">🏆 Bonus Perfeito:</span>
+                    <span class="score-value" id="perfectBonus"></span>
+                </div>
+            </div>
+
+            <button class="btn" onclick="startGame()" style="font-size: 1.2rem; padding: 15px 30px;">
+                🔄 Jogar Novamente
+            </button>
+            <button class="btn btn-secondary" onclick="showStats()" style="margin-left: 10px;">
+                📊 Ver Estatísticas
+            </button>
+        </div>
+    </template>
+
+    <div id="gameContent"></div>
+
+    <template id="statsTemplate">
+        <div class="stats-view">
+            <h2>📊 Suas Estatísticas</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" data-stat="totalScore"></div>
+                    <div class="stat-label">Pontos Totais</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" data-stat="gamesPlayed"></div>
+                    <div class="stat-label">Jogos Jogados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" data-stat="avgScore"></div>
+                    <div class="stat-label">Média por Jogo</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" data-stat="accuracy"></div>
+                    <div class="stat-label">Precisão</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" data-stat="maxStreak"></div>
+                    <div class="stat-label">Maior Sequência</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" data-stat="correctAnswers"></div>
+                    <div class="stat-label">Total de Acertos</div>
+                </div>
+            </div>
+            <div class="stat-card level-card-big">
+                <div class="stat-number">⭐ <span data-stat="level"></span></div>
+                <div class="stat-label">Nível Atual</div>
+                <div class="level-progress">
+                    <div class="xp-bar-big">
+                        <div class="xp-progress" data-stat="xpProgress" style="width: 0%"></div>
+                    </div>
+                    <small><span data-stat="currentXP"></span>/<span data-stat="xpNeeded"></span> XP</small>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" data-stat="totalXP"></div>
+                <div class="stat-label">XP Total</div>
+            </div>
+            <div class="stat-card titles-card" id="titlesCard" style="display:none;">
+                <div class="stat-number" data-stat="titlesCount"></div>
+                <div class="stat-label">Títulos Conquistados</div>
+                <div class="titles-list" data-stat="titlesList"></div>
+            </div>
+            <div style="margin-top: 30px;">
+                <button class="btn" onclick="startGame()">🎮 Novo Jogo</button>
+                <button class="btn btn-secondary" onclick="resetStats()" style="margin-left: 10px;">🔄 Resetar
+                    Estatísticas</button>
+            </div>
+        </div>
+    </template>
+
     <!-- <script src="script.js"></script> -->
     <script>
-        let phrases = [
+        // ==========================================
+        // 1. CONFIGURAÇÕES E CONSTANTES
+        // ==========================================
+
+        // Array principal de frases
+        let phrases = [/* dados das frases */
             {
                 "id": 1,
                 "english": "This is an apple.",
                 "portuguese": "Isto é uma maçã.",
                 "difficulty": "fácil",
-                "category": "frutas"
-            },
-            {
-                "id": 2,
-                "english": "The cat is sleeping under the bed.",
-                "portuguese": "O gato está dormindo debaixo da cama.",
-                "difficulty": "médio",
-                "category": "animais"
-            },
-            {
-                "id": 3,
-                "english": "Purple is a mix of red and blue.",
-                "portuguese": "Roxo é uma mistura de vermelho e azul.",
-                "difficulty": "difícil",
-                "category": "cores"
-            },
-            {
-                "id": 4,
-                "english": "She counted from one to one hundred without stopping.",
-                "portuguese": "Ela contou de um a cem sem parar.",
-                "difficulty": "extremo",
-                "category": "números"
-            },
-            {
-                "id": 5,
-                "english": "My brother and sister live in different cities.",
-                "portuguese": "Meu irmão e minha irmã moram em cidades diferentes.",
-                "difficulty": "médio",
-                "category": "família"
-            },
-            {
-                "id": 6,
-                "english": "The kitchen is next to the living room.",
-                "portuguese": "A cozinha fica ao lado da sala de estar.",
-                "difficulty": "fácil",
-                "category": "casa"
-            },
-            {
-                "id": 7,
-                "english": "They ate pasta with tomato sauce for dinner.",
-                "portuguese": "Eles comeram macarrão com molho de tomate no jantar.",
-                "difficulty": "difícil",
-                "category": "comida"
-            },
-            {
-                "id": 8,
-                "english": "Life is short, enjoy every moment.",
-                "portuguese": "A vida é curta, aproveite cada momento.",
-                "difficulty": "extremo",
-                "category": "frases-gerais"
+                "category": "frutas",
+                "type": "selection"
             }
         ];
-        // ADICIONAR após o array phrases:
+
+        //Constantes do sistema
         const DIFFICULTIES = ['fácil', 'médio', 'difícil', 'extremo'];
-        const CATEGORIES = {
+        const CATEGORIES = {/* categorias */
             'frutas': 'Frutas',
             'animais': 'Animais',
             'cores': 'Cores',
@@ -975,8 +1118,7 @@
             'comida': 'Comida',
             'frases-gerais': 'Frases Gerais'
         };
-        // Sistema de Score Avançado
-        const SCORE_SYSTEM = {
+        const SCORE_SYSTEM = {// sistema de pontuação, Sistema de Score Avançado
             points: {
                 'fácil': 10,
                 'médio': 20,
@@ -989,8 +1131,7 @@
                 fastAnswer: 10       // Bonus por resposta rápida
             }
         };
-        // Sistema de Níveis
-        const LEVEL_SYSTEM = {
+        const LEVEL_SYSTEM = {/* sistema de níveis */
             baseXP: 100,        // XP necessário para o nível 1
             multiplier: 1.5,    // Multiplicador de XP por nível
             maxLevel: 50,       // Nível máximo
@@ -1006,7 +1147,17 @@
                 50: { type: 'title', value: 'Mestre', message: '🏅 Título máximo: Mestre dos Idiomas!' }
             }
         };
-        let playerStats = {
+        const GAME_TYPES = {//tipo da pergunta
+            'selection': 'Seleção de Palavras',
+            'multiple': 'Múltipla Escolha'
+        };
+        const QUESTION_DIRECTIONS = {//direçao da pergunta ingles portugues > portugues ingles
+            'en-pt': 'Inglês → Português',
+            'pt-en': 'Português → Inglês'
+        };
+
+        // Estados globais
+        let playerStats = {/* estatísticas do jogador */
             totalScore: 0,
             gamesPlayed: 0,
             questionsAnswered: 0,
@@ -1021,8 +1172,7 @@
             titles: [],
             currentTitle: null
         };
-        //variáveis úteis
-        let gameState = {
+        let gameState = {/* estado atual do jogo */
             availableQuestions: [],
             currentQuestion: null,
             selectedWords: [],
@@ -1036,7 +1186,8 @@
             roundScore: 0
         };
         let editingId = null;
-        // IndexedDB functions
+
+        // IndexedDB functions, Configurações do IndexedDB
         const DB_NAME = 'EnglishLearningGame';
         const DB_VERSION = 1;
         const STORE_NAME = 'phrases';
@@ -1046,8 +1197,8 @@
         // ==========================================
         // 2. FUNÇÕES DE INICIALIZAÇÃO
         // ==========================================
-
-        async function initDB() {
+        // Inicializar banco de dados
+        async function initDB() {/* inicializa IndexedDB */
             return new Promise((resolve, reject) => {
                 const request = indexedDB.open(DB_NAME, DB_VERSION);
 
@@ -1067,8 +1218,8 @@
                 };
             });
         }
-        // Funções do Sistema de Score
-        function loadPlayerStats() {
+        // Carregar estatísticas salvas
+        function loadPlayerStats() {/* carrega stats do localStorage */
             try {
                 const saved = localStorage.getItem('playerStats');
                 if (saved) {
@@ -1078,8 +1229,8 @@
                 console.error('Erro ao carregar estatísticas:', error);
             }
         }
-        // FUNÇÃO 1: Inicializar dropdowns
-        function initializeDropdowns() {
+        // Inicializar dropdowns de seleção  
+        function initializeDropdowns() {/* preenche selects de categoria/dificuldade */
             const categorySelect = document.getElementById('categorySelect');
             const difficultySelect = document.getElementById('difficultySelect');
             const categorySelect2 = document.getElementById('categorySelect2');
@@ -1100,9 +1251,21 @@
                 difficultySelect.add(option1);
                 difficultySelect2.add(option2);
             });
+            // Preencher tipos de jogo
+            const gameTypeSelect = document.getElementById('gameTypeSelect');
+            Object.keys(GAME_TYPES).forEach(key => {
+                const option = new Option(GAME_TYPES[key], key);
+                gameTypeSelect.add(option);
+            });
+            // Preencher direções de pergunta
+            const questionDirectionSelect = document.getElementById('questionDirection');
+            Object.keys(QUESTION_DIRECTIONS).forEach(key => {
+                const option = new Option(QUESTION_DIRECTIONS[key], key);
+                questionDirectionSelect.add(option);
+            });
         }
-        // Initialize
-        async function init() {
+        // Função principal de inicialização
+        async function init() {/* inicializa toda a aplicação */
             try {
                 await initDB();
                 await mergePhrases(); // Usar mergePhrases em vez de loadPhrases
@@ -1110,6 +1273,7 @@
                 initializeDropdowns();
                 loadPhrasesList();
                 updateGameStatus();
+                document.getElementById('gameTypeSelect').addEventListener('change', toggleCustomOptions);
                 console.log(`${phrases.length} frases carregadas`);
             } catch (error) {
                 console.error('Erro ao inicializar:', error);
@@ -1122,7 +1286,8 @@
         // ==========================================
         // 3. FUNÇÕES DE GERENCIAMENTO DE DADOS
         // ==========================================
-        async function savePhrases() {
+        // Salvar frases no IndexedDB
+        async function savePhrases() {/* salva frases no banco */
             const transaction = db.transaction([STORE_NAME], 'readwrite');
             const store = transaction.objectStore(STORE_NAME);
 
@@ -1134,7 +1299,8 @@
                 await store.add(phrase);
             }
         }
-        async function loadPhrases() {
+        // Carregar frases do IndexedDB
+        async function loadPhrases() {/* carrega frases do banco */
             const transaction = db.transaction([STORE_NAME], 'readonly');
             const store = transaction.objectStore(STORE_NAME);
             const request = store.getAll();
@@ -1159,7 +1325,8 @@
                 request.onerror = () => reject(request.error);
             });
         }
-        async function mergePhrases() {
+        // Mesclar frases (script + banco)
+        async function mergePhrases() {/* combina frases do script com banco */
             const transaction = db.transaction([STORE_NAME], 'readonly');
             const store = transaction.objectStore(STORE_NAME);
             const request = store.getAll();
@@ -1193,7 +1360,8 @@
                 request.onerror = () => reject(request.error);
             });
         }
-        function savePlayerStats() {
+        // Salvar estatísticas
+        function savePlayerStats() {/* salva stats no localStorage */
             try {
                 localStorage.setItem('playerStats', JSON.stringify(playerStats));
             } catch (error) {
@@ -1203,26 +1371,25 @@
         // ==========================================
         // 4. SISTEMA DE PONTUAÇÃO E NÍVEIS
         // ==========================================
-
-        // Funções do Sistema de Níveis
-        function getXPForLevel(level) {
+        // Calcular XP necessário para nível
+        function getXPForLevel(level) {/* calcula XP por nível */
             if (level <= 1) return 0;
             return Math.floor(LEVEL_SYSTEM.baseXP * Math.pow(LEVEL_SYSTEM.multiplier, level - 2));
         }
-
-        function getXPNeededForNextLevel(currentLevel) {
+        // XP necessário para próximo nível
+        function getXPNeededForNextLevel(currentLevel) {/* XP para subir */
             return getXPForLevel(currentLevel + 1);
         }
-
-        function getTotalXPForLevel(level) {
+        // XP total acumulado até nível
+        function getTotalXPForLevel(level) {/* XP total do nível */
             let total = 0;
             for (let i = 1; i <= level; i++) {
                 total += getXPForLevel(i);
             }
             return total;
         }
-
-        function addXP(amount) {
+        // Adicionar XP ao jogador
+        function addXP(amount) {/* adiciona XP e verifica level up */
             const oldLevel = playerStats.level;
             playerStats.currentXP += amount;
             playerStats.totalXP += amount;
@@ -1236,8 +1403,8 @@
             savePlayerStats();
             return playerStats.level > oldLevel;
         }
-
-        function levelUp(oldLevel) {
+        // Subir de nível
+        function levelUp(oldLevel) {/* processo de subir nível */
             playerStats.currentXP -= getXPNeededForNextLevel(oldLevel);
             playerStats.level++;
 
@@ -1249,8 +1416,8 @@
 
             showLevelUpAnimation(oldLevel, playerStats.level);
         }
-
-        function processLevelReward(reward, level) {
+        // Processar recompensas de nível
+        function processLevelReward(reward, level) {/* aplica recompensas */
             switch (reward.type) {
                 case 'bonus':
                     playerStats.totalScore += reward.value;
@@ -1268,8 +1435,8 @@
                     break;
             }
         }
-
-        function showLevelUpAnimation(oldLevel, newLevel) {
+        // Animação de level up
+        function showLevelUpAnimation(oldLevel, newLevel) {/* mostra animação */
             const levelUpDiv = document.createElement('div');
             levelUpDiv.className = 'level-up-animation';
             levelUpDiv.innerHTML = `
@@ -1293,14 +1460,14 @@
 
             speak(`Parabéns! Você subiu para o nível ${newLevel}!`, 'pt');
         }
-
-        function getProgressPercentage() {
+        // Calcular porcentagem de progresso
+        function getProgressPercentage() {/* % para próximo nível */
             if (playerStats.level >= LEVEL_SYSTEM.maxLevel) return 100;
             const xpNeeded = getXPNeededForNextLevel(playerStats.level);
             return Math.min(100, Math.round((playerStats.currentXP / xpNeeded) * 100));
         }
-
-        function calculateScore(difficulty, isCorrect, timeSpent = 0) {
+        // Calcular pontuação da resposta
+        function calculateScore(difficulty, isCorrect, timeSpent = 0) {/* calcula pontos */
             if (!isCorrect) return 0;
 
             let points = SCORE_SYSTEM.points[difficulty] || 10;
@@ -1317,8 +1484,8 @@
 
             return points;
         }
-
-        function updateStreak(isCorrect) {
+        // Atualizar sequência de acertos
+        function updateStreak(isCorrect) {/* gerencia streaks */
             if (isCorrect) {
                 gameState.currentStreak++;
                 playerStats.streak++;
@@ -1333,8 +1500,8 @@
         // ==========================================
         // 5. FUNÇÕES DE IMPORTAÇÃO/EXPORTAÇÃO
         // ==========================================
-        // Import/Export functions
-        function exportPhrases() {
+        // Exportar frases para JSON, Import/Export functions
+        function exportPhrases() {/* exporta dados */
             if (phrases.length === 0) {
                 alert('Não há frases para exportar!');
                 return;
@@ -1350,8 +1517,8 @@
 
             URL.revokeObjectURL(link.href);
         }
-
-        async function importPhrases(event) {
+        // Importar frases de arquivo
+        async function importPhrases(event) {/* importa dados */
             const file = event.target.files[0];
             if (!file) return;
 
@@ -1412,9 +1579,8 @@
             // Clear file input
             event.target.value = '';
         }
-
         // Função para adicionar frases via script (para desenvolvedores)
-        async function addPhrasesToScript(newPhrases) {
+        async function addPhrasesToScript(newPhrases) {/* adiciona por código */
             if (!Array.isArray(newPhrases)) {
                 console.error('addPhrasesToScript: parâmetro deve ser um array');
                 return;
@@ -1436,22 +1602,9 @@
         // ==========================================
         // 6. FUNÇÕES DE NAVEGAÇÃO (TABS)
         // ==========================================
-        // Exemplo de uso no console:
-        // addPhrasesToScript([
-        //     {
-        //         english: "Hello World",
-        //         portuguese: "Olá Mundo",
-        //         difficulty: "fácil",
-        //         category: "frases-gerais"
-        //     }
-        // ]);
 
-
-
-
-
-        // Tab functionality
-        document.querySelectorAll('.tab').forEach(tab => {
+        // Tab functionality, Event listeners para tabs
+        document.querySelectorAll('.tab').forEach(tab => {/* gerencia tabs */
             tab.addEventListener('click', () => {
                 const targetTab = tab.dataset.tab;
 
@@ -1469,8 +1622,8 @@
         // ==========================================
         // 7. FUNÇÕES DE ÁUDIO E UTILIDADES
         // ==========================================
-        // Speech synthesis functions
-        function speak(text, lang) {
+        // Speech synthesis functions, // Sintetizador de voz
+        function speak(text, lang) {/* fala texto */
             if (!document.getElementById('enableVoice').checked) return;
 
             const utterance = new SpeechSynthesisUtterance(text);
@@ -1478,9 +1631,8 @@
             utterance.rate = 0.8;
             speechSynthesis.speak(utterance);
         }
-
-        // Utility functions
-        function shuffleArray(array) {
+        // Embaralhar array
+        function shuffleArray(array) {/* randomiza ordem */
             const shuffled = [...array];
             for (let i = shuffled.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -1488,11 +1640,51 @@
             }
             return shuffled;
         }
+        //multipla escolha
+        // Gerar alternativas para múltipla escolha
+        function generateMultipleChoiceOptions(correctAnswer, allPhrases, direction = 'en-pt') {
+            const currentQuestion = gameState.currentQuestion;
+
+            // Se a pergunta tem opções customizadas, use elas
+            if (currentQuestion.customOptions && currentQuestion.customOptions.length > 0) {
+                return shuffleArray([...currentQuestion.customOptions]);
+            }
+
+            // Caso contrário, use a lógica original
+            const options = [correctAnswer];
+            const isEnglishToPortuguese = direction === 'en-pt';
+            const availablePhrases = allPhrases.filter(p => {
+                const phraseAnswer = isEnglishToPortuguese ? p.portuguese : p.english;
+                return phraseAnswer !== correctAnswer && p.category === currentQuestion.category;
+            });
+
+            while (options.length < 4 && availablePhrases.length > 0) {
+                const randomIndex = Math.floor(Math.random() * availablePhrases.length);
+                const randomPhrase = availablePhrases.splice(randomIndex, 1)[0];
+                const phraseAnswer = isEnglishToPortuguese ? randomPhrase.portuguese : randomPhrase.english;
+                options.push(phraseAnswer);
+            }
+
+            if (options.length < 4) {
+                const otherPhrases = allPhrases.filter(p => {
+                    const phraseAnswer = isEnglishToPortuguese ? p.portuguese : p.english;
+                    return phraseAnswer !== correctAnswer;
+                });
+                while (options.length < 4 && otherPhrases.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * otherPhrases.length);
+                    const randomPhrase = otherPhrases.splice(randomIndex, 1)[0];
+                    const phraseAnswer = isEnglishToPortuguese ? randomPhrase.portuguese : randomPhrase.english;
+                    options.push(phraseAnswer);
+                }
+            }
+
+            return shuffleArray(options);
+        }
         // ==========================================
         // 8. FUNÇÕES DE INTERFACE DO JOGO
         // ==========================================
-
-        function updateGameStatus() {
+        // Atualizar status visual do jogo
+        function updateGameStatus() {/* atualiza UI com stats */
             document.getElementById('currentScore').textContent = gameState.score;
             document.getElementById('totalQuestions').textContent = gameState.totalQuestions;
             document.getElementById('currentQuestionNum').textContent = gameState.currentQuestionNum;
@@ -1537,8 +1729,8 @@
                 streakCard.remove();
             }
         }
-        // FUNÇÃO 2: Filtrar frases baseado na seleção
-        function getFilteredPhrases() {
+        // Filtrar frases por categoria/dificuldade
+        function getFilteredPhrases() {/* aplica filtros */
             const selectedCategory = document.getElementById('categorySelect').value;
             const selectedDifficulty = document.getElementById('difficultySelect').value;
 
@@ -1551,8 +1743,8 @@
         // ==========================================
         // 9. FUNÇÕES PRINCIPAIS DO JOGO
         // ==========================================
-        // Game functions
-        function startGame() {
+        // Iniciar novo jogo
+        function startGame() {/* inicia partida */
             const filteredPhrases = getFilteredPhrases();
 
             if (phrases.length === 0) {
@@ -1583,8 +1775,8 @@
             updateGameStatus();
             nextQuestion();
         }
-
-        function nextQuestion() {
+        // Próxima pergunta
+        function nextQuestion() {/* carrega próxima questão */
             if (gameState.availableQuestions.length === 0) {
                 endGame();
                 return;
@@ -1608,18 +1800,73 @@
             // Show reset button
             document.getElementById('resetBtn').style.display = 'inline-block';
         }
-
+        // Renderizar pergunta na tela
         function renderQuestion() {
-            const words = gameState.currentQuestion.portuguese.split(' ');
+            const gameContent = document.getElementById('gameContent');
+            const questionType = gameState.currentQuestion.type || 'selection';
+
+            if (questionType === 'multiple') {
+                renderMultipleChoiceQuestion();
+            } else {
+                renderSelectionQuestion();
+            }
+
+            // Speak the question baseado na direção
+            const direction = gameState.currentQuestion.direction || 'en-pt';
+            setTimeout(() => {
+                const questionType = gameState.currentQuestion.type || 'selection';
+
+                if (direction === 'en-pt') {
+                    if (questionType === 'selection') {
+                        const words = gameState.currentQuestion.portuguese.split(' ');
+                        const introText = words.length > 1 ? "Monte a frase corretamente" : "Qual o significado da palavra";
+                        speak(introText, 'pt');
+                    } else {
+                        speak("Qual o significado de", 'pt');
+                    }
+                    setTimeout(() => {
+                        speak(gameState.currentQuestion.english, 'en');
+                    }, 1500);
+                } else {
+                    if (questionType === 'selection') {
+                        const words = gameState.currentQuestion.english.split(' ');
+                        const introText = words.length > 1 ? "Arrange the sentence correctly" : "What is the meaning of the word";
+                        speak(introText, 'en');
+                    } else {
+                        speak("What is the meaning of", 'en');
+                    }
+                    setTimeout(() => {
+                        speak(gameState.currentQuestion.portuguese, 'pt');
+                    }, 1500);
+                }
+            }, 500);
+        }
+        // Renderizar pergunta de seleção (modo atual)
+        function renderSelectionQuestion() {
+            const direction = gameState.currentQuestion.direction || 'en-pt';
+            const isEnglishToPortuguese = direction === 'en-pt';
+
+            const questionText = isEnglishToPortuguese ? gameState.currentQuestion.english : gameState.currentQuestion.portuguese;
+            const answerText = isEnglishToPortuguese ? gameState.currentQuestion.portuguese : gameState.currentQuestion.english;
+            const words = answerText.split(' ');
             const shuffledWords = shuffleArray(words);
 
+            const answerWords = answerText.split(' ');
+            const questionLabel = isEnglishToPortuguese
+                ? (answerWords.length > 1 ? "Monte a frase corretamente:" : "Qual o significado da palavra:")
+                : (answerWords.length > 1 ? "Arrange the sentence correctly:" : "What is the meaning of the word:");
+
+            const instructionText = isEnglishToPortuguese
+                ? (answerWords.length > 1 ? "🎯 Monte a frase na ordem correta:" : "🎯 Selecione as palavras para formar a tradução:")
+                : (answerWords.length > 1 ? "🎯 Arrange the sentence in correct order:" : "🎯 Select the words to form the translation:");
             const gameContent = document.getElementById('gameContent');
+
             gameContent.innerHTML = `
-                <div class="question">Qual o significado de:</div>
-                <div class="english-phrase">"${gameState.currentQuestion.english}"</div>
+                <div class="question">${questionLabel}</div>
+                <div class="english-phrase">"${questionText}"</div>
                 
                 <div class="answer-area">
-                    <h4>🎯 Monte a tradução na ordem correta:</h4>
+                    <h4>${instructionText}</h4>
                     <div class="selected-words empty" id="selectedWordsArea">
                         Clique nas palavras abaixo para formar a frase
                     </div>
@@ -1639,17 +1886,106 @@
                     </div>
                 </div>
             `;
-
-            // Speak the question
-            setTimeout(() => {
-                speak("Qual o significado de", 'pt');
-                setTimeout(() => {
-                    speak(gameState.currentQuestion.english, 'en');
-                }, 1500);
-            }, 500);
         }
 
-        function selectWord(word, buttonIndex) {
+        // Renderizar pergunta de múltipla escolha
+        function renderMultipleChoiceQuestion() {
+            const direction = gameState.currentQuestion.direction || 'en-pt';
+            const isEnglishToPortuguese = direction === 'en-pt';
+
+            const questionText = isEnglishToPortuguese ? gameState.currentQuestion.english : gameState.currentQuestion.portuguese;
+            const correctAnswer = isEnglishToPortuguese ? gameState.currentQuestion.portuguese : gameState.currentQuestion.english;
+
+            const options = generateMultipleChoiceOptions(correctAnswer, phrases, direction);
+            const gameContent = document.getElementById('gameContent');
+
+            const questionLabel = isEnglishToPortuguese ? "Qual o significado de:" : "What is the meaning of:";
+            const instructionText = isEnglishToPortuguese ? "🎯 Escolha a tradução correta:" : "🎯 Choose the correct translation:";
+
+            gameContent.innerHTML = `
+                <div class="question">${questionLabel}</div>
+                <div class="english-phrase">"${questionText}"</div>
+                
+                <div class="answer-area">
+                    <h4>${instructionText}</h4>
+                    <div class="multiple-choice-options" id="multipleChoiceOptions">
+                        ${options.map((option, index) => `
+                            <button class="choice-btn" onclick="selectMultipleChoice(\`${option}\`, ${index})" id="choice-${index}">
+                                ${String.fromCharCode(65 + index)}) ${option}
+                            </button>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="game-actions">
+                        <button class="btn btn-secondary" onclick="showAnswer()">👁️ Ver Resposta</button>
+                    </div>
+                </div>
+            `;
+        }
+        // Selecionar opção de múltipla escolha
+        function selectMultipleChoice(selectedOption, optionIndex) {
+            const direction = gameState.currentQuestion.direction || 'en-pt';
+            const correctAnswer = direction === 'en-pt' ? gameState.currentQuestion.portuguese : gameState.currentQuestion.english;
+            const isCorrect = selectedOption === correctAnswer;
+
+            // Destacar a opção selecionada
+            const buttons = document.querySelectorAll('.choice-btn');
+            buttons.forEach((btn, index) => {
+                btn.disabled = true;
+                if (index === optionIndex) {
+                    btn.classList.add(isCorrect ? 'correct' : 'incorrect');
+                }
+                // Destacar a resposta correta se errou
+                if (!isCorrect && btn.textContent.includes(correctAnswer)) {
+                    btn.classList.add('correct');
+                }
+            });
+
+            // Processar resultado (usar a mesma lógica do checkAnswer)
+            if (isCorrect) {
+                const timeSpent = Date.now() - gameState.roundStartTime;
+                const earnedPoints = calculateScore(gameState.currentQuestion.difficulty, true, timeSpent);
+
+                gameState.score += earnedPoints;
+                gameState.roundScore += earnedPoints;
+
+                const xpGained = SCORE_SYSTEM.points[gameState.currentQuestion.difficulty] / 2;
+                addXP(xpGained);
+
+                updateStreak(true);
+                playerStats.correctAnswers++;
+                playerStats.totalScore += earnedPoints;
+
+                showFeedback(`🎉 Perfeito! +${earnedPoints} pontos!`, 'correct');
+                speak('Perfeito! Você acertou!', 'pt');
+            } else {
+                updateStreak(false);
+                showFeedback(`❌ Incorreto! A resposta correta é: "${correctAnswer}"`, 'incorrect');
+                speak('Incorreto. A resposta correta é:', 'pt');
+                setTimeout(() => {
+                    // Verificar se tem espaços isolados e remover apenas esses
+                    const textToSpeak = correctAnswer.includes(' ') && correctAnswer.split(' ').length === 1
+                        ? correctAnswer.replace(/\s+/g, '')
+                        : correctAnswer;
+                    speak(textToSpeak, 'pt');
+                }, 1500);
+            }
+
+            playerStats.questionsAnswered++;
+            savePlayerStats();
+            updateGameStatus();
+
+            // Avançar para próxima pergunta
+            setTimeout(() => {
+                if (gameState.availableQuestions.length > 0) {
+                    nextQuestion();
+                } else {
+                    endGame();
+                }
+            }, 2000);
+        }
+        // Selecionar palavra
+        function selectWord(word, buttonIndex) {/* adiciona palavra à resposta */
             const button = document.getElementById(`word-${buttonIndex}`);
             if (button.disabled) return;
 
@@ -1658,8 +1994,8 @@
 
             updateSelectedWordsDisplay();
         }
-
-        function removeSelectedWord(wordIndex) {
+        // Remover palavra selecionada
+        function removeSelectedWord(wordIndex) {/* remove palavra da resposta */
             const word = gameState.selectedWords[wordIndex];
             gameState.selectedWords.splice(wordIndex, 1);
 
@@ -1674,8 +2010,8 @@
 
             updateSelectedWordsDisplay();
         }
-
-        function updateSelectedWordsDisplay() {
+        // Atualizar área de palavras selecionadas
+        function updateSelectedWordsDisplay() {/* atualiza UI das palavras */
             const selectedWordsArea = document.getElementById('selectedWordsArea');
 
             if (gameState.selectedWords.length === 0) {
@@ -1688,8 +2024,8 @@
                 selectedWordsArea.className = 'selected-words has-words';
             }
         }
-
-        function clearSelection() {
+        // Limpar seleção atual
+        function clearSelection() {/* limpa resposta */
             gameState.selectedWords = [];
 
             // Re-enable all buttons
@@ -1698,15 +2034,17 @@
 
             updateSelectedWordsDisplay();
         }
-
-        function checkAnswer() {
+        // Verificar resposta do usuário
+        function checkAnswer() {/* valida resposta */
             if (gameState.selectedWords.length === 0) {
                 alert('Selecione algumas palavras primeiro!');
                 return;
             }
 
+            const direction = gameState.currentQuestion.direction || 'en-pt';
             const userAnswer = gameState.selectedWords.join(' ').toLowerCase().trim();
-            const correctAnswer = gameState.currentQuestion.portuguese.toLowerCase().trim();
+            const correctAnswerText = direction === 'en-pt' ? gameState.currentQuestion.portuguese : gameState.currentQuestion.english;
+            const correctAnswer = correctAnswerText.toLowerCase().trim();
 
             const isCorrect = userAnswer === correctAnswer;
 
@@ -1756,10 +2094,15 @@
 
             } else {
                 updateStreak(false);
-                showFeedback(`❌ Incorreto! A resposta correta é: "${gameState.currentQuestion.portuguese}"`, 'incorrect');
+                showFeedback(`❌ Incorreto! A resposta correta é: "${correctAnswerText}"`, 'incorrect');
                 speak('Incorreto. A resposta correta é:', 'pt');
                 setTimeout(() => {
-                    speak(gameState.currentQuestion.portuguese, 'pt');
+                    const lang = direction === 'en-pt' ? 'pt' : 'en';
+                    // Verificar se tem espaços isolados e remover apenas esses
+                    const textToSpeak = correctAnswerText.includes(' ') && correctAnswerText.split(' ').length === 1
+                        ? correctAnswerText.replace(/\s+/g, '')
+                        : correctAnswerText;
+                    speak(textToSpeak, lang);
                 }, 1500);
             }
 
@@ -1769,24 +2112,49 @@
             updateGameStatus();
 
         }
+        // Mostrar resposta correta
+        function showAnswer() {/* revela resposta */
+            const questionType = gameState.currentQuestion.type || 'selection';
 
-        function showAnswer() {
-            showFeedback(`💡 A resposta é: "${gameState.currentQuestion.portuguese}"`, 'correct');
-            speak('A resposta é:', 'pt');
+            if (questionType === 'multiple') {
+                // Para múltipla escolha, destacar a resposta correta
+                const buttons = document.querySelectorAll('.choice-btn');
+                buttons.forEach(btn => {
+                    if (btn.textContent.includes(gameState.currentQuestion.portuguese)) {
+                        btn.classList.add('correct');
+                    }
+                    btn.disabled = true;
+                });
+            } else {
+                // Código existente para seleção
+                const direction = gameState.currentQuestion.direction || 'en-pt';
+                const correctAnswerText = direction === 'en-pt' ? gameState.currentQuestion.portuguese : gameState.currentQuestion.english;
+
+                gameState.selectedWords = correctAnswerText.split(' ');
+                updateSelectedWordsDisplay();
+                const buttons = document.querySelectorAll('.word-btn');
+                buttons.forEach(btn => btn.disabled = true);
+            }
+
+            const direction = gameState.currentQuestion.direction || 'en-pt';
+            const correctAnswerText = direction === 'en-pt' ? gameState.currentQuestion.portuguese : gameState.currentQuestion.english;
+
+            showFeedback(`💡 A resposta é: "${correctAnswerText}"`, 'correct');
+            const answerLang = direction === 'en-pt' ? 'pt' : 'en';
+            const introLang = direction === 'en-pt' ? 'pt' : 'en';
+            const introText = direction === 'en-pt' ? 'A resposta é:' : 'The answer is:';
+
+            speak(introText, introLang);
             setTimeout(() => {
-                speak(gameState.currentQuestion.portuguese, 'pt');
+                // Verificar se tem espaços isolados e remover apenas esses
+                const textToSpeak = correctAnswerText.includes(' ') && correctAnswerText.split(' ').length === 1
+                    ? correctAnswerText.replace(/\s+/g, '')
+                    : correctAnswerText;
+                speak(textToSpeak, answerLang);
             }, 1000);
-
-            // Show correct order
-            gameState.selectedWords = gameState.currentQuestion.portuguese.split(' ');
-            updateSelectedWordsDisplay();
-
-            // Disable all word buttons
-            const buttons = document.querySelectorAll('.word-btn');
-            buttons.forEach(btn => btn.disabled = true);
         }
-
-        function resetRound() {
+        // Resetar rodada atual
+        function resetRound() {/* reinicia pergunta */
             gameState.selectedWords = [];
             updateSelectedWordsDisplay();
 
@@ -1796,17 +2164,15 @@
 
             hideFeedback();
         }
-
+        // Finalizar jogo
         function endGame() {
             const percentage = Math.round((gameState.score / gameState.totalQuestions) * 100);
 
-            // Bonus por jogo perfeito
             if (percentage === 100) {
                 gameState.roundScore += SCORE_SYSTEM.bonuses.perfectRound;
                 playerStats.totalScore += SCORE_SYSTEM.bonuses.perfectRound;
             }
 
-            // Salvar histórico
             playerStats.gamesPlayed++;
             playerStats.scoreHistory.push({
                 date: new Date().toISOString(),
@@ -1815,14 +2181,14 @@
                 questions: gameState.totalQuestions
             });
 
-            // Manter apenas os últimos 50 jogos
             if (playerStats.scoreHistory.length > 50) {
                 playerStats.scoreHistory = playerStats.scoreHistory.slice(-50);
             }
 
             savePlayerStats();
 
-            const gameContent = document.getElementById('gameContent');
+            const template = document.getElementById('endGameTemplate');
+            const clone = template.content.cloneNode(true);
 
             let message = '';
             if (percentage >= 90) {
@@ -1835,123 +2201,65 @@
                 message = '💪 Continue tentando! A prática leva à perfeição!';
             }
 
-            const perfectBonus = percentage === 100 ? SCORE_SYSTEM.bonuses.perfectRound : 0;
+            clone.querySelector('.end-message').textContent = message;
+            clone.getElementById('roundScore').textContent = `${gameState.roundScore} pontos`;
+            clone.getElementById('correctAnswers').textContent = `${gameState.score}/${gameState.totalQuestions} (${percentage}%)`;
+            clone.getElementById('maxStreak').textContent = `${playerStats.maxStreak} acertos`;
+            clone.getElementById('totalScore').textContent = `${playerStats.totalScore} pontos`;
 
-            gameContent.innerHTML = `
-        <div class="game-complete">
-            <h2>🎮 Jogo Concluído!</h2>
-            <p>${message}</p>
-            
-            <div class="score-summary">
-                <div class="score-item">
-                    <span class="score-label">Pontuação da Rodada:</span>
-                    <span class="score-value">${gameState.roundScore} pontos</span>
-                </div>
-                <div class="score-item">
-                    <span class="score-label">Acertos:</span>
-                    <span class="score-value">${gameState.score}/${gameState.totalQuestions} (${percentage}%)</span>
-                </div>
-                <div class="score-item">
-                    <span class="score-label">Maior Sequência:</span>
-                    <span class="score-value">${playerStats.maxStreak} acertos</span>
-                </div>
-                <div class="score-item">
-                    <span class="score-label">Pontuação Total:</span>
-                    <span class="score-value">${playerStats.totalScore} pontos</span>
-                </div>
-                ${perfectBonus > 0 ? `
-                <div class="score-item bonus">
-                    <span class="score-label">🏆 Bonus Perfeito:</span>
-                    <span class="score-value">+${perfectBonus} pontos</span>
-                </div>
-                ` : ''}
-            </div>
-            
-            <button class="btn" onclick="startGame()" style="font-size: 1.2rem; padding: 15px 30px;">
-                🔄 Jogar Novamente
-            </button>
-            <button class="btn btn-secondary" onclick="showStats()" style="margin-left: 10px;">
-                📊 Ver Estatísticas
-            </button>
-        </div>
-    `;
+            if (percentage === 100) {
+                clone.getElementById('perfectBonus').textContent = `+${SCORE_SYSTEM.bonuses.perfectRound} pontos`;
+                clone.getElementById('perfectBonusContainer').style.display = 'flex';
+            }
+
+            const gameContent = document.getElementById('gameContent');
+            gameContent.innerHTML = '';
+            gameContent.appendChild(clone);
 
             document.getElementById('resetBtn').style.display = 'none';
             gameState.gameActive = false;
 
             speak(`Jogo concluído! Você fez ${gameState.roundScore} pontos.`, 'pt');
         }
+
         // ==========================================
         // 10. FUNÇÕES DE ESTATÍSTICAS
         // ==========================================
-
-        function showStats() {
+        // Mostrar tela de estatísticas
+        function showStats() {/* exibe stats detalhadas */
             const gameContent = document.getElementById('gameContent');
+            const template = document.getElementById('statsTemplate');
+            const clone = template.content.cloneNode(true);
+
             const avgScore = playerStats.gamesPlayed > 0 ? Math.round(playerStats.totalScore / playerStats.gamesPlayed) : 0;
             const accuracy = playerStats.questionsAnswered > 0 ? Math.round((playerStats.correctAnswers / playerStats.questionsAnswered) * 100) : 0;
 
-            gameContent.innerHTML = `
-        <div class="stats-view">
-            <h2>📊 Suas Estatísticas</h2>
-            
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number">${playerStats.totalScore}</div>
-                    <div class="stat-label">Pontos Totais</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">${playerStats.gamesPlayed}</div>
-                    <div class="stat-label">Jogos Jogados</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">${avgScore}</div>
-                    <div class="stat-label">Média por Jogo</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">${accuracy}%</div>
-                    <div class="stat-label">Precisão</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">${playerStats.maxStreak}</div>
-                    <div class="stat-label">Maior Sequência</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">${playerStats.correctAnswers}</div>
-                    <div class="stat-label">Total de Acertos</div>
-                </div>
+            clone.querySelector('[data-stat="totalScore"]').textContent = playerStats.totalScore;
+            clone.querySelector('[data-stat="gamesPlayed"]').textContent = playerStats.gamesPlayed;
+            clone.querySelector('[data-stat="avgScore"]').textContent = avgScore;
+            clone.querySelector('[data-stat="accuracy"]').textContent = accuracy + '%';
+            clone.querySelector('[data-stat="maxStreak"]').textContent = playerStats.maxStreak;
+            clone.querySelector('[data-stat="correctAnswers"]').textContent = playerStats.correctAnswers;
+            clone.querySelector('[data-stat="level"]').textContent = playerStats.level;
+            clone.querySelector('[data-stat="currentXP"]').textContent = playerStats.currentXP;
+            clone.querySelector('[data-stat="xpNeeded"]').textContent = getXPNeededForNextLevel(playerStats.level);
+            clone.querySelector('[data-stat="xpProgress"]').style.width = getProgressPercentage() + '%';
+            clone.querySelector('[data-stat="totalXP"]').textContent = playerStats.totalXP;
 
-            </div>
-<div class="stat-card level-card-big">
-    <div class="stat-number">⭐ ${playerStats.level}</div>
-    <div class="stat-label">Nível Atual</div>
-    <div class="level-progress">
-        <div class="xp-bar-big">
-            <div class="xp-progress" style="width: ${getProgressPercentage()}%"></div>
-        </div>
-        <small>${playerStats.currentXP}/${getXPNeededForNextLevel(playerStats.level)} XP</small>
-    </div>
-</div>
-<div class="stat-card">
-    <div class="stat-number">${playerStats.totalXP}</div>
-    <div class="stat-label">XP Total</div>
-</div>
-${playerStats.titles.length > 0 ? `
-<div class="stat-card titles-card">
-    <div class="stat-number">${playerStats.titles.length}</div>
-    <div class="stat-label">Títulos Conquistados</div>
-    <div class="titles-list">${playerStats.titles.join(', ')}</div>
-</div>
-` : ''}
-            
-            <div style="margin-top: 30px;">
-                <button class="btn" onclick="startGame()">🎮 Novo Jogo</button>
-                <button class="btn btn-secondary" onclick="resetStats()" style="margin-left: 10px;">🔄 Resetar Estatísticas</button>
-            </div>
-        </div>
-    `;
+            // Lida com os títulos
+            if (playerStats.titles.length > 0) {
+                const titlesCard = clone.getElementById('titlesCard');
+                titlesCard.style.display = '';
+                clone.querySelector('[data-stat="titlesCount"]').textContent = playerStats.titles.length;
+                clone.querySelector('[data-stat="titlesList"]').textContent = playerStats.titles.join(', ');
+            }
+
+            // Limpa e insere no DOM
+            gameContent.innerHTML = '';
+            gameContent.appendChild(clone);
         }
-
-        function resetStats() {
+        // Resetar todas as estatísticas
+        function resetStats() {/* limpa dados salvos */
             if (confirm('Tem certeza que deseja resetar todas as estatísticas?')) {
                 playerStats = {
                     totalScore: 0,
@@ -1969,23 +2277,36 @@ ${playerStats.titles.length > 0 ? `
         // ==========================================
         // 11. FUNÇÕES DE FEEDBACK VISUAL
         // ==========================================
-
-        function showFeedback(message, type) {
+        // Mostrar feedback na tela
+        function showFeedback(message, type) {/* exibe mensagem */
             const feedback = document.getElementById('feedback');
             feedback.textContent = message;
             feedback.className = `feedback ${type}`;
             feedback.style.display = 'block';
         }
-
-        function hideFeedback() {
+        // Esconder feedback
+        function hideFeedback() {/* oculta mensagem */
             document.getElementById('feedback').style.display = 'none';
         }
         // ==========================================
         // 12. FUNÇÕES DE GERENCIAMENTO DE FRASES
         // ==========================================
+        // Atualizar labels do modal conforme direção
+        function updateModalLabels() {
+            const direction = document.getElementById('questionDirection').value;
+            const labelEnglish = document.getElementById('labelEnglish');
+            const labelPortuguese = document.getElementById('labelPortuguese');
 
-        // Phrase management functions
-        function loadPhrasesList() {
+            if (direction === 'pt-en') {
+                labelPortuguese.textContent = 'Frase em Português:';
+                labelEnglish.textContent = 'Tradução em Inglês:';
+            } else {
+                labelPortuguese.textContent = 'Tradução em Português:';
+                labelEnglish.textContent = 'Frase em Inglês:';
+            }
+        }
+        // Carregar lista de frases
+        function loadPhrasesList() {/* exibe lista no gerenciador */
             const list = document.getElementById('phrasesList');
 
             if (phrases.length === 0) {
@@ -1994,33 +2315,37 @@ ${playerStats.titles.length > 0 ? `
             }
 
             list.innerHTML = phrases.map(phrase => `
-    <div class="phrase-item">
-        <div class="phrase-content">
-            <div class="phrase-english">${phrase.english}</div>
-            <div class="phrase-portuguese">${phrase.portuguese}</div>
-            <!-- ADICIONAR ESTAS LINHAS: -->
-            <div class="phrase-meta">
-                <span class="category-badge">${CATEGORIES[phrase.category] || phrase.category}</span>
-                <span class="difficulty-badge difficulty-${phrase.difficulty}">${phrase.difficulty}</span>
-            </div>
-        </div>
-        <div class="phrase-actions">
-            <button class="btn btn-secondary btn-small" onclick="editPhrase(${phrase.id})">✏️ Editar</button>
-            <button class="btn btn-danger btn-small" onclick="deletePhrase(${phrase.id})">🗑️ Excluir</button>
-        </div>
-    </div>
-`).join('');
+                <div class="phrase-item">
+                    <div class="phrase-content">
+                        <div class="phrase-english">${phrase.english}</div>
+                        <div class="phrase-portuguese">${phrase.portuguese}</div>
+                        <!-- ADICIONAR ESTAS LINHAS: -->
+                        <div class="phrase-meta">
+                            <span class="category-badge">${CATEGORIES[phrase.category] || phrase.category}</span>
+                            <span class="difficulty-badge difficulty-${phrase.difficulty}">${phrase.difficulty}</span>
+                        </div>
+                    </div>
+                    <div class="phrase-actions">
+                        <button class="btn btn-secondary btn-small" onclick="editPhrase(${phrase.id})">✏️ Editar</button>
+                        <button class="btn btn-danger btn-small" onclick="deletePhrase(${phrase.id})">🗑️ Excluir</button>
+                    </div>
+                </div>
+            `).join('');
         }
-
-        function openAddModal() {
+        // Abrir modal de adição
+        function openAddModal() {/* modal para nova frase */
             editingId = null;
             document.getElementById('modalTitle').textContent = 'Adicionar Nova Frase';
             document.getElementById('englishPhrase').value = '';
             document.getElementById('portugueseTranslation').value = '';
+            document.getElementById('questionDirection').value = '';
+            document.getElementById('customOptionsContainer').style.display = 'none';
+            document.getElementById('customOptions').value = '';
+            updateModalLabels();
             document.getElementById('phraseModal').style.display = 'block';
         }
-
-        function editPhrase(id) {
+        // Editar frase existente
+        function editPhrase(id) {/* modal para editar */
             const phrase = phrases.find(p => p.id === id);
             if (!phrase) return;
 
@@ -2031,45 +2356,110 @@ ${playerStats.titles.length > 0 ? `
             // ADICIONAR ESTAS LINHAS:
             document.getElementById('categorySelect2').value = phrase.category || '';
             document.getElementById('difficultySelect2').value = phrase.difficulty || '';
+            document.getElementById('gameTypeSelect').value = phrase.type || 'selection';
+            //para mudar a direçao da pergunta
+            document.getElementById('questionDirection').value = phrase.direction || 'en-pt';
+            if (phrase.type === 'multiple' && phrase.customOptions) {
+                document.getElementById('customOptions').value = phrase.customOptions.join('\n');
+                document.getElementById('customOptionsContainer').style.display = 'block';
+            } else {
+                document.getElementById('customOptionsContainer').style.display = 'none';
+            }
+            toggleCustomOptions(); // Chama a função para mostrar/ocultar o campo
+            updateModalLabels();
             document.getElementById('phraseModal').style.display = 'block';
-        }
 
-        async function deletePhrase(id) {
+        }
+        // Excluir frase
+        async function deletePhrase(id) {/* remove frase */
             if (confirm('Tem certeza que deseja excluir esta frase?')) {
                 phrases = phrases.filter(p => p.id !== id);
                 await savePhrases();
                 loadPhrasesList();
             }
         }
-
-        async function clearAllPhrases() {
+        // Limpar todas as frases
+        async function clearAllPhrases() {/* remove todas */
             if (confirm('Tem certeza que deseja excluir todas as frases? Esta ação não pode ser desfeita.')) {
                 phrases = [];
                 await savePhrases();
                 loadPhrasesList();
             }
         }
-
-        function closeModal() {
+        // Fechar modal
+        function closeModal() {/* fecha janela modal */
             document.getElementById('phraseModal').style.display = 'none';
+        }
+        // Fecha o modal ao clicar fora do conteúdo
+        window.addEventListener('click', function (event) {
+            const modal = document.getElementById('phraseModal');
+            const modalContent = modal.querySelector('.modal-content');
+
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Mostrar/ocultar campo de opções customizadas
+        function toggleCustomOptions() {
+            const gameType = document.getElementById('gameTypeSelect').value;
+            const customContainer = document.getElementById('customOptionsContainer');
+
+            if (gameType === 'multiple') {
+                customContainer.style.display = 'block';
+            } else {
+                customContainer.style.display = 'none';
+            }
         }
         // ==========================================
         // 13. EVENT LISTENERS
         // ==========================================
-
-        // Form submission
+        // Event listener para mostrar/ocultar opções customizadas
+        document.getElementById('gameTypeSelect').addEventListener('change', toggleCustomOptions);
+        document.getElementById('questionDirection').addEventListener('change', updateModalLabels);
+        // Form submission, Formulário de frases
         document.getElementById('phraseForm').addEventListener('submit', async function (e) {
+
             e.preventDefault();
 
             const englishPhrase = document.getElementById('englishPhrase').value.trim();
             const portugueseTranslation = document.getElementById('portugueseTranslation').value.trim();
             const category = document.getElementById('categorySelect2').value;
             const difficulty = document.getElementById('difficultySelect2').value;
+            const gameType = document.getElementById('gameTypeSelect').value;
+            const questionDirection = document.getElementById('questionDirection').value;
+            const customOptions = document.getElementById('customOptions').value.trim();
+
+            if (!englishPhrase || !portugueseTranslation || !category || !difficulty || !gameType || !questionDirection) {
+                alert('Por favor, preencha todos os campos.');
+                return;
+            }
 
             if (!englishPhrase || !portugueseTranslation || !category || !difficulty) {
                 alert('Por favor, preencha todos os campos.');
                 return;
             }
+            // Adicione esta validação após verificar se os campos estão preenchidos
+            if (gameType === 'multiple') {
+                if (!customOptions) {
+                    alert('Para perguntas de múltipla escolha, adicione pelo menos as opções de resposta.');
+                    return;
+                }
+
+                const optionsArray = customOptions.split('\n').map(opt => opt.trim()).filter(opt => opt);
+                if (optionsArray.length < 2) {
+                    alert('Adicione pelo menos 2 opções de resposta.');
+                    return;
+                }
+
+                if (!optionsArray.includes(portugueseTranslation)) {
+                    alert('A resposta correta deve estar incluída nas opções.');
+                    return;
+                }
+            }
+            // Substitua a parte onde você salva a frase por:
+
+            const customOptionsArray = customOptions ? customOptions.split('\n').map(opt => opt.trim()).filter(opt => opt) : null;
 
             if (editingId) {
                 const phrase = phrases.find(p => p.id === editingId);
@@ -2078,6 +2468,9 @@ ${playerStats.titles.length > 0 ? `
                     phrase.portuguese = portugueseTranslation;
                     phrase.category = category;
                     phrase.difficulty = difficulty;
+                    phrase.type = gameType;
+                    phrase.direction = questionDirection;
+                    phrase.customOptions = customOptionsArray;
                 }
             } else {
                 const newId = Math.max(...phrases.map(p => p.id), 0) + 1;
@@ -2086,7 +2479,10 @@ ${playerStats.titles.length > 0 ? `
                     english: englishPhrase,
                     portuguese: portugueseTranslation,
                     category: category,
-                    difficulty: difficulty
+                    difficulty: difficulty,
+                    type: gameType,
+                    direction: questionDirection,
+                    customOptions: customOptionsArray
                 });
             }
 
